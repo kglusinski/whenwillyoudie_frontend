@@ -11,6 +11,16 @@ export default {
   name: 'App',
   components: {
     Calculator
+  },
+  computed: {
+    loggedIn() {
+      return this.$store.state.loggedIn
+    }
+  },
+  beforeMount() {
+    if (!this.loggedIn) {
+      console.log("not logged");
+    }
   }
 }
 </script>
