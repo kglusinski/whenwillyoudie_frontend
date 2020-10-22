@@ -35,7 +35,7 @@ export default {
         username: this.username,
         password: this.password
       }
-      const res = await axios.post("http://localhost:8000/api/register", data);
+      const res = await axios.post("http://ec2-3-127-243-187.eu-central-1.compute.amazonaws.com:8080/api/register", data);
 
       this.$store.commit("setToken", res.data["token"]);
       this.$router.push("/login");

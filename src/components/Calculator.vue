@@ -99,7 +99,7 @@ export default {
         }
       };
 
-      const result = await axios.get(`http://localhost:8000/api/data?age=${this.age}&sex=${this.sex}&place_type=${this.placeType}`, headers).catch(
+      const result = await axios.get(`http://ec2-3-127-243-187.eu-central-1.compute.amazonaws.com:8080/api/data?age=${this.age}&sex=${this.sex}&place_type=${this.placeType}`, headers).catch(
           () => {
             this.$store.commit("logout");
             this.$router.push("/login");
@@ -110,7 +110,7 @@ export default {
         this.lifeExpectancy = result.data["life_expectancy"]
         this.deathProbability = result.data["death_probability"]
         if (this.placeType === 0) {
-          const resultRural = await axios.get(`http://localhost:8000/api/data?age=${this.age}&sex=${this.sex}&place_type=1`, headers);
+          const resultRural = await axios.get(`http://ec2-3-127-243-187.eu-central-1.compute.amazonaws.com:8080/api/data?age=${this.age}&sex=${this.sex}&place_type=1`, headers);
           this.lifeExpectancyRural = resultRural.data["life_expectancy"]
         }
 
@@ -127,7 +127,7 @@ export default {
         }
       };
 
-      const result = await axios.get(`http://localhost:8000/api/user/data`, headers).catch(
+      const result = await axios.get(`http://ec2-3-127-243-187.eu-central-1.compute.amazonaws.com:8000/api/user/data`, headers).catch(
           () => {
             this.$store.commit("logout");
             this.$router.push("/login");
