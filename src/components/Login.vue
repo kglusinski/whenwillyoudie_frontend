@@ -35,7 +35,7 @@ export default {
         username: this.username,
         password: this.password
       }
-      const res = await axios.post("http://ec2-3-127-243-187.eu-central-1.compute.amazonaws.com:8080/api/login_check", data);
+      const res = await axios.post(process.env.VUE_APP_API_URL + "/api/login_check", data);
       console.log(res);
 
       this.$store.commit("setToken", res.data["token"]);
