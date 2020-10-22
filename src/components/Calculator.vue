@@ -4,6 +4,7 @@
       <div id="result" v-if="lifeExpectancy != 0">
         <h2>Będziesz życ jeszcze...</h2>
         <p class="display-4"><b>{{ lifeExpectancy }}</b> lat</p>
+        <p class="lead">Obecne prawdopodobieństwo zgonu wynosi {{ deathProbability }}</p>
         <p class="lead">
           Zakładając śmierć naturalną, przy obecnych warunkach umieralności wg danych GUS na rok 2019.
           W praktyce trochę wiecej. Każdy przeżyty rok zwiększa szansę na przeżycie kolejnego. Warunki umieralności również się zmieniają.
@@ -13,7 +14,7 @@
           <h4>Czy wiesz, że...?</h4>
           <p class="lead">
             Jeśli <span v-if="sex === 0">mieszkałbyś</span><span v-else>mieszkałabyś</span> na wsi,
-            Twoje dalsze życie mogłoby trwać {{ lifeExpectancyRural }} lat czyli o {{ lifeExpectancyRural - lifeExpectancy }} dłużej.
+            Twoje dalsze życie mogłoby trwać {{ lifeExpectancyRural }} lat czyli o {{ (lifeExpectancyRural - lifeExpectancy) | round }} lat dłużej.
           </p>
         </div>
 
@@ -63,21 +64,44 @@ export default {
       placeType: 0,
       sex: 0,
       lifeExpectancy: 0,
-      lifeExpectancyRural: 0
+      lifeExpectancyRural: 0,
+      deathProbability: "",
     };
   },
-  props: {
-    msg: String
+  computed: {
+    getToken() {
+      return this.$store.state.token
+    }
   },
   methods: {
     async calculate(e) {
       e.preventDefault();
-      const result = await axios.get(`http://localhost:8000/data?age=${this.age}&sex=${this.sex}&place_type=${this.placeType}`);
-      this.lifeExpectancy = result.data["life_expectancy"]
-      if (this.placeType === 0) {
-        const resultRural = await axios.get(`http://localhost:8000/data?age=${this.age}&sex=${this.sex}&place_type=1`);
-        this.lifeExpectancyRural = resultRural.data["life_expectancy"]
+      const headers = {
+        headers: {
+          Authorization: `Bearer ${this.getToken}`
+        }
+      };
+
+      const result = await axios.get(`http://localhost:8000/api/data?age=${this.age}&sex=${this.sex}&place_type=${this.placeType}`, headers).catch(
+          () => {
+            this.$store.commit("logout");
+            this.$router.push("/login");
+          }
+      );
+
+      if (result.status === 200) {
+        this.lifeExpectancy = result.data["life_expectancy"]
+        this.deathProbability = result.data["death_probability"]
+        if (this.placeType === 0) {
+          const resultRural = await axios.get(`http://localhost:8000/api/data?age=${this.age}&sex=${this.sex}&place_type=1`, headers);
+          this.lifeExpectancyRural = resultRural.data["life_expectancy"]
+        }
       }
+    },
+  },
+  filters: {
+    round(value) {
+      return Math.round(value * 100) / 100;
     },
   },
 }

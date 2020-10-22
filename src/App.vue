@@ -1,17 +1,12 @@
 <template>
   <div id="app" class="container">
-    <Calculator />
+    <router-view />
   </div>
 </template>
 
 <script>
-import Calculator from './components/Calculator'
-
 export default {
   name: 'App',
-  components: {
-    Calculator
-  },
   computed: {
     loggedIn() {
       return this.$store.state.loggedIn
@@ -19,7 +14,7 @@ export default {
   },
   beforeMount() {
     if (!this.loggedIn) {
-      console.log("not logged");
+      this.$router.push("/login")
     }
   }
 }

@@ -2,11 +2,11 @@
   <div>
     <form>
       <div class="form-group">
-        <label for="username"></label>
+        <label for="username">Nazwa</label>
         <input type="text" name="username" id="username" v-model="username">
       </div>
       <div class="form-group">
-        <label for="password"></label>
+        <label for="password">Hasło</label>
         <input type="password" name="password" id="password" v-model="password">
       </div>
       <button class="btn btn-success" @click="login">Login</button>
@@ -25,14 +25,17 @@ export default {
     };
   },
   methods: {
-    async login() {
+    async login(e) {
+      e.preventDefault();
       const data = {
         username: this.username,
         password: this.password
       }
-      const res = await axios.post("localhost:8000/api/login_check", data);
+      const res = await axios.post("http://localhost:8000/api/login_check", data);
+      console.log(res);
 
-      this.$store.commit("setToken", res.body["token"]);
+      this.$store.commit("setToken", res.data["token"]);
+      this.$router.push("/");
     },
   },
 }
