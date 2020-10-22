@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <div class="col-6 offset-3">
-      <h3>Zaloguj się</h3>
+      <h3>Zarejestruj się</h3>
       <form>
         <div class="form-group">
           <label for="username">Nazwa</label>
@@ -11,9 +11,9 @@
           <label for="password">Hasło</label>
           <input class="form-control" type="password" name="password" id="password" v-model="password">
         </div>
-        <button class="btn btn-success" @click="login">Zaloguj się</button>
+        <button class="btn btn-success" @click="login">Utwórz konto</button>
       </form>
-      <router-link  to="/register">Stwórz nowe konto</router-link>
+      Masz już konto? <router-link  to="/login">Zaloguj się</router-link>
     </div>
   </div>
 </template>
@@ -21,7 +21,7 @@
 <script>
 import axios from 'axios';
 export default {
-  name: "Login",
+  name: "Register",
   data: () => {
     return {
       username: "",
@@ -35,11 +35,10 @@ export default {
         username: this.username,
         password: this.password
       }
-      const res = await axios.post("http://localhost:8000/api/login_check", data);
-      console.log(res);
+      const res = await axios.post("http://localhost:8000/api/register", data);
 
       this.$store.commit("setToken", res.data["token"]);
-      this.$router.push("/");
+      this.$router.push("/login");
     },
   },
 }

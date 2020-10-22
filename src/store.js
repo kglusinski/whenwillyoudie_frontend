@@ -15,6 +15,7 @@ export default new vuex.Store({
         },
         logout(state) {
             state.loggedIn = false;
+            state.token = null;
         }
     }
 })

@@ -50,6 +50,22 @@
         </div>
         <button class="btn btn-success" v-on:click="calculate">Ile będę jeszcze żyć?</button>
       </form>
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Ryzyko śmierci</th>
+          <th scope="col">Przewidywane dalsze życie</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(el, i) in historicalData" v-bind:key="i">
+          <th scope="row">{{ i }}</th>
+          <td>{{ el.deathProbability }}</td>
+          <td>{{ el.lifeExpectancy }}</td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
@@ -66,6 +82,7 @@ export default {
       lifeExpectancy: 0,
       lifeExpectancyRural: 0,
       deathProbability: "",
+      historicalData: [],
     };
   },
   computed: {
@@ -96,6 +113,33 @@ export default {
           const resultRural = await axios.get(`http://localhost:8000/api/data?age=${this.age}&sex=${this.sex}&place_type=1`, headers);
           this.lifeExpectancyRural = resultRural.data["life_expectancy"]
         }
+
+        this.historicalData.push({
+          lifeExpectancy: this.lifeExpectancy,
+          deathProbability: this.deathProbability,
+        })
+      }
+    },
+    async getHistoricalData() {
+      const headers = {
+        headers: {
+          Authorization: `Bearer ${this.getToken}`
+        }
+      };
+
+      const result = await axios.get(`http://localhost:8000/api/user/data`, headers).catch(
+          () => {
+            this.$store.commit("logout");
+            this.$router.push("/login");
+          }
+      );
+      if (result.status === 200) {
+        for (const el of result.data["user_data"]) {
+          this.historicalData.push({
+            lifeExpectancy: el["life_expectancy"],
+            deathProbability: el["death_probability"],
+          })
+        }
       }
     },
   },
@@ -104,6 +148,9 @@ export default {
       return Math.round(value * 100) / 100;
     },
   },
+    beforeMount() {
+      this.getHistoricalData();
+    },
 }
 </script>
 
